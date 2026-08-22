@@ -21,3 +21,4 @@ flagged/
 .gradio/
 
 .ngrok
+start.sh
