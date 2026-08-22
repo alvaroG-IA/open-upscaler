@@ -1,4 +1,3 @@
-import logging
 import gradio as gr
 
 from backend import show_image_info, process_image, log_cancellation

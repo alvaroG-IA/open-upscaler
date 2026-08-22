@@ -20,5 +20,8 @@ flagged/
 .DS_Store
 .gradio/
 
+# Logs
+.logs/
+
 .ngrok
 start.sh
