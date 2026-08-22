@@ -148,9 +148,9 @@ This stores the token in your local ngrok configuration and links the agent to y
 
 #### 4. Get a public domain
 
-For a simple setup, ngrok provides a free automatically assigned dev domain.
+For a simple setup, ngrok provides a random URL each time. However, ngrok now includes **one free static domain** (e.g., `word-word-word.ngrok-free.dev`) on their free tier.
 
-If you want to use a **specific/reserved `ngrok.app` domain**, create one from the **Domains** section of your ngrok dashboard. Note that custom/reserved domain selection is not available on ngrok's free plan.
+You can find and claim your permanent domain in the **Domains** section of your ngrok dashboard.
 
 #### 5. Start Open Upscaler
 
@@ -168,10 +168,10 @@ ngrok http 8888
 
 ngrok will display a public URL that forwards traffic to your local application.
 
-If you have a reserved domain:
+If you have claimed your free static domain:
 
 ```bash
-ngrok http 8888 --url https://your-domain.ngrok.app
+ngrok http --domain=your-domain.ngrok-free.app 8888
 ```
 
 #### Optional: Use the provided script
@@ -209,15 +209,14 @@ Many thanks to the **AI-Forever team** and the open-source community for making 
 
 ---
 
-## 🔮 Future Work
+## 🔮 Future Work (Roadmap)
 
-Some ideas for future improvements include:
+I'm actively exploring new features to evolve Open Upscaler from a pure resolution-enhancer into a comprehensive AI photo restoration suite:
 
-- [ ] Support for additional super-resolution models.
-- [ ] Improved GPU memory optimization.
-- [ ] Batch image processing.
-- [ ] Additional image restoration options.
-- [ ] Further improvements to the user interface and processing workflow.
+- [ ] **Historical Photo Restoration Pipeline:** Introducing a dedicated flow for vintage photos, chaining scratch/dust removal models (inpainting) and colorization before the final upscale.
+- [ ] **Facial Reconstruction (Facial Priors):** Integrating models like **GFPGAN** or **CodeFormer** to accurately rebuild heavily degraded faces and prevent the "uncanny valley" effect common in standard upscalers.
+- [ ] **Batch Processing:** Adding UI support for bulk-uploading multiple images and exporting the processed results as a compressed `.zip` archive.
+- [ ] **Multi-Tab Interface:** Evolving the Gradio UI to separate "Modern Upscaling" and "Historical Restoration" into distinct, specialized workspaces.
 
 ---
 
