@@ -19,3 +19,5 @@ hf_cache/
 flagged/
 .DS_Store
 .gradio/
+
+.ngrok
