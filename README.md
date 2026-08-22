@@ -18,6 +18,14 @@ Open Upscaler provides a simple **Gradio** interface for increasing image resolu
 
 ---
 
+## 💡 Motivation
+
+This project was born out of a single afternoon's frustration. I simply needed to upscale a low-resolution image, but every online tool I found was hidden behind forced account registrations, aggressive paywalls, or expensive subscriptions for a basic AI inference task. 
+
+As an AI engineer, I decided to look under the hood to see what kind of neural networks were actually powering these "premium" services—which ultimately led to the creation of this repository. I built **Open Upscaler** to provide a completely free, local, and transparent alternative. I hope this tool helps you bypass those predatory websites as much as it helps me! 🙂
+
+---
+
 ## 🛠 Tech Stack
 
 **Core:** Python 3.10+ | PyTorch | Hugging Face Hub
