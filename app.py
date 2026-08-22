@@ -1,7 +1,7 @@
 import logging
 import gradio as gr
 
-from backend import show_image_info, process_image
+from backend import show_image_info, process_image, log_cancellation
 
 theme = gr.themes.Neon(
     primary_hue="purple", 
@@ -23,7 +23,7 @@ css_animacion = """
 }
 """
 
-with gr.Blocks(theme=theme, css=css_animacion, title="Open Upscaler") as demo:
+with gr.Blocks(theme=theme, css=css_animacion, title="Open Upscaler") as app:
     gr.Markdown(
         """
         # 🚀 Open Upscaler Studio
@@ -82,12 +82,17 @@ with gr.Blocks(theme=theme, css=css_animacion, title="Open Upscaler") as demo:
         outputs=[output_image, telemetry_text],
     )
     
-    cancel_btn.click(fn=None, inputs=None, outputs=None, cancels=[evento_inferencia])
+    cancel_btn.click(
+        fn=log_cancellation, 
+        inputs=None, 
+        outputs=None, 
+        cancels=[evento_inferencia]
+    )
 
 
 if __name__ == "__main__":
-    demo.queue().launch(
+    app.queue().launch(
         server_name="0.0.0.0",
-        server_port=7860,
+        server_port=8888,
         inbrowser=True,
     )
