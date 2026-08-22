@@ -120,15 +120,15 @@ You can expose Open Upscaler to the internet using **ngrok**.
 
 #### 1. Create an ngrok account
 
-If you don't already have one, create a free account at [Ngrok](https://ngrok.com/?utm_source=chatgpt.com)
+If you don't already have one, create a free account at [ngrok](https://ngrok.com/?utm_source=chatgpt.com)
 
 An ngrok account and authentication token are required to connect the local agent to your account.
 
 #### 2. Install ngrok
 
-Download and install the ngrok Agent for your operating system [Ngrok downloads](https://ngrok.com/download?utm_source=chatgpt.com)
+Download and install the ngrok Agent for your operating system [ngrok downloads](https://ngrok.com/download?utm_source=chatgpt.com)
 
-For Windows, you can also use the official Windows installation options [Ngrok for Windows](https://ngrok.com/download/windows?utm_source=chatgpt.com)
+For Windows, you can also use the official Windows installation options [ngrok for Windows](https://ngrok.com/download/windows?utm_source=chatgpt.com)
 
 Verify the installation:
 
