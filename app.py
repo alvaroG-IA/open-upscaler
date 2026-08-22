@@ -1,88 +1,14 @@
-import time
-import torch
+import logging
 import gradio as gr
-from PIL import Image
 
-from src.model import RealESRGAN
+from backend import show_image_info, process_image
 
-
-def get_device() -> torch.device:
-    if torch.backends.mps.is_available():
-        return torch.device("mps")
-    elif torch.cuda.is_available():
-        return torch.device("cuda")
-    return torch.device("cpu")
-
-
-DEVICE = get_device()
-MODEL_CACHE = {}
-
-
-def load_model(scale: int) -> RealESRGAN:
-    if scale not in MODEL_CACHE:
-        model = RealESRGAN(device=DEVICE, scale=scale)
-        model.load_weights(download=True)
-        MODEL_CACHE[scale] = model
-    return MODEL_CACHE[scale]
-
-
-def process_image(input_img: Image.Image, scale_choice: str, tile_size: int):
-    if input_img is None:
-        return None, "Por favor, sube una imagen antes de procesar."
-
-    scale = int(scale_choice.replace("x", ""))
-    
-    start_time = time.time()
-    orig_w, orig_h = input_img.size
-
-    if scale == 1:
-        model = load_model(scale=2)
-        sr_image = model.predict(input_img, tile_size=tile_size)
-        sr_image = sr_image.resize((orig_w, orig_h), Image.Resampling.LANCZOS)
-    else:
-        model = load_model(scale=scale)
-        sr_image = model.predict(input_img, tile_size=tile_size)
-
-    if DEVICE.type == "mps":
-        torch.mps.empty_cache()
-    elif DEVICE.type == "cuda":
-        torch.cuda.empty_cache()
-
-    elapsed = time.time() - start_time
-    final_w, final_h = sr_image.size
-
-    telemetry = (
-        f"⚡ {orig_w}×{orig_h} px ➔ {final_w}×{final_h} px | "
-        f"⏱️ {elapsed:.2f}s | "
-        f"🖥️ {DEVICE.type.upper()}"
-    )
-
-    return sr_image, telemetry
-
-
-def show_image_info(img: Image.Image):
-    if img is None:
-        return ""
-    w, h = img.size
-    pixeles_totales = (w * h) / 1_000_000
-    return f"**Información:** Resolución {w}×{h} px | {pixeles_totales:.1f} Megapíxeles | Modo: {img.mode}"
-
-
-# 1. Tema nativo Soft con colores Morado y Gris neutro (Slate)
 theme = gr.themes.Neon(
     primary_hue="purple", 
     secondary_hue="slate",
     neutral_hue="slate"
 )
 
-# 2. Script para FORZAR siempre el modo claro (fondo blanco)
-forzar_modo_claro = """
-function() {
-    document.body.classList.remove('dark');
-}
-"""
-
-# 3. Mantenemos solo la animación del botón para darle ese toque premium
 css_animacion = """
 .boton-animado {
     transition: all 0.2s ease-in-out !important;
@@ -97,7 +23,7 @@ css_animacion = """
 }
 """
 
-with gr.Blocks(theme=theme, css=css_animacion, js=forzar_modo_claro, title="Open Upscaler") as demo:
+with gr.Blocks(theme=theme, css=css_animacion, title="Open Upscaler") as demo:
     gr.Markdown(
         """
         # 🚀 Open Upscaler Studio
