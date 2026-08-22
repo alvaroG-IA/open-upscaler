@@ -84,9 +84,9 @@ class RealESRGAN:
         else:
             output = self._predict_tiled(tensor, tile_size=tile_size, tile_pad=tile_pad)
 
-        esperado_h = orig_h * self.scale
-        esperado_w = orig_w * self.scale
-        output = output[:, :, 0:esperado_h, 0:esperado_w]
+        target_h = orig_h * self.scale
+        target_w = orig_w * self.scale
+        output = output[:, :, 0:target_h, 0:target_w]
         output = output.squeeze(0).permute(1, 2, 0).clamp(0, 1).cpu().numpy()
         sr_img = (output * 255.0).round().astype(np.uint8)
         return Image.fromarray(sr_img)
