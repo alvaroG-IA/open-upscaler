@@ -62,25 +62,31 @@ class RealESRGAN:
 
     @torch.inference_mode()
     def predict(self, lr_image: Image.Image, tile_size: int = 1024, tile_pad: int = 16) -> Image.Image:
-        """
-        Inferencia de super-resolución.
-        Procesa de forma directa o mediante mosaicos (tiling) si la imagen excede tile_size.
-        """
-        # Asegurar formato RGB
+        from torch.nn import functional as F
+
         if lr_image.mode != "RGB":
             lr_image = lr_image.convert("RGB")
 
         img_np = np.array(lr_image).astype(np.float32) / 255.0
-        # HWC -> NCHW
         tensor = torch.from_numpy(img_np).permute(2, 0, 1).unsqueeze(0).to(self.device)
 
-        _, _, h, w = tensor.shape
+        _, _, orig_h, orig_w = tensor.shape
 
+        mod_scale = 2 if self.scale == 2 else (4 if self.scale == 1 else 1)
+        pad_h = (mod_scale - orig_h % mod_scale) % mod_scale
+        pad_w = (mod_scale - orig_w % mod_scale) % mod_scale
+        if pad_h != 0 or pad_w != 0:
+            tensor = F.pad(tensor, (0, pad_w, 0, pad_h), mode='reflect')
+
+        _, _, h, w = tensor.shape
         if tile_size <= 0 or (h <= tile_size and w <= tile_size):
             output = self.model(tensor)
         else:
             output = self._predict_tiled(tensor, tile_size=tile_size, tile_pad=tile_pad)
 
+        esperado_h = orig_h * self.scale
+        esperado_w = orig_w * self.scale
+        output = output[:, :, 0:esperado_h, 0:esperado_w]
         output = output.squeeze(0).permute(1, 2, 0).clamp(0, 1).cpu().numpy()
         sr_img = (output * 255.0).round().astype(np.uint8)
         return Image.fromarray(sr_img)
