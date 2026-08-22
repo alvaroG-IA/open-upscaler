@@ -7,11 +7,11 @@ from huggingface_hub import hf_hub_download
 
 from .model_arch import RRDBNet
 
-# Configuración oficial de pesos y arquitectura
+
 MODEL_SPECS = {
-    2: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x2.pth", "num_block": 23},
-    4: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x4.pth", "num_block": 23},
-    8: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x8.pth", "num_block": 23},
+    2: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x2.pth"},
+    4: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x4.pth"},
+    8: {"repo_id": "ai-forever/Real-ESRGAN", "filename": "RealESRGAN_x8.pth"},
 }
 
 
@@ -24,12 +24,11 @@ class RealESRGAN:
         self.scale = scale
         self.spec = MODEL_SPECS[scale]
 
-        # Instanciar RRDBNet con los bloques exactos según la escala
         self.model = RRDBNet(
             num_in_ch=3,
             num_out_ch=3,
             num_feat=64,
-            num_block=self.spec["num_block"],
+            num_block=23,
             num_grow_ch=32,
             scale=scale,
         )
@@ -50,7 +49,6 @@ class RealESRGAN:
 
         loadnet = torch.load(model_path, map_location=self.device, weights_only=True)
         
-        # Compatibilidad con los distintos formatos de checkpoint de Real-ESRGAN
         if "params_ema" in loadnet:
             state_dict = loadnet["params_ema"]
         elif "params" in loadnet:
@@ -78,11 +76,9 @@ class RealESRGAN:
 
         _, _, h, w = tensor.shape
 
-        # Inferencia directa si entra en un solo tile
         if tile_size <= 0 or (h <= tile_size and w <= tile_size):
             output = self.model(tensor)
         else:
-            # Inferencia segmentada por parches para ahorrar memoria
             output = self._predict_tiled(tensor, tile_size=tile_size, tile_pad=tile_pad)
 
         output = output.squeeze(0).permute(1, 2, 0).clamp(0, 1).cpu().numpy()
@@ -102,7 +98,6 @@ class RealESRGAN:
                 ofs_x = x * tile_size
                 ofs_y = y * tile_size
 
-                # Coordenadas de entrada con margen de seguridad (padding)
                 in_sx = max(ofs_x - tile_pad, 0)
                 in_ex = min(ofs_x + tile_size + tile_pad, width)
                 in_sy = max(ofs_y - tile_pad, 0)
@@ -111,7 +106,6 @@ class RealESRGAN:
                 tile = tensor[:, :, in_sy:in_ey, in_sx:in_ex]
                 out_tile = self.model(tile)
 
-                # Coordenadas de salida descartando el padding extra
                 out_sx = ofs_x * self.scale
                 out_ex = min((ofs_x + tile_size) * self.scale, out_w)
                 out_sy = ofs_y * self.scale
