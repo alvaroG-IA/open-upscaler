@@ -1,1 +1,21 @@
-.venv
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pt
+*.pth
+
+# Descargas de modelos y checkpoints locales
+weights/
+.cache/
+hf_cache/
+
+# Gradio / Mac OS
+flagged/
+.DS_Store
+.gradio/
